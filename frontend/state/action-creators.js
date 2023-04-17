@@ -52,7 +52,9 @@ export function postAnswer(quizID, answerID) {
       .then(res => {
         dispatch(setMessage(res.data.message))
       })
-    dispatch(fetchQuiz())
+      .finally(() => {
+        dispatch(fetchQuiz());
+      });
   }
 }
 
@@ -77,11 +79,13 @@ const newQuizURL = 'http://localhost:9000/api/quiz/new'
 
 export function postQuiz(question, trueAnswer, falseAnswer) {
   return function (dispatch) {
+    
     axios.post(newQuizURL, {question_text: `${question}`, true_answer_text: `${trueAnswer}`, false_answer_text: `${falseAnswer}` })
     .then(res => {
       dispatch(setMessage(`Congrats: "${question}" is a great question!`))
     })
-    dispatch(resetForm())
+    .finally(dispatch(resetForm()))
+    
 
     // On successful POST:
     // - Dispatch the correct message to the the appropriate state
