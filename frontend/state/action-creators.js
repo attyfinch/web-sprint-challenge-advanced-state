@@ -1,5 +1,5 @@
 // ❗ You don't need to add extra action creators to achieve MVP
-import { MOVE_CLOCKWISE, MOVE_COUNTERCLOCKWISE, SET_QUIZ_INTO_STATE, SET_SELECTED_ANSWER, SET_INFO_MESSAGE } from "./action-types"
+import { MOVE_CLOCKWISE, MOVE_COUNTERCLOCKWISE, SET_QUIZ_INTO_STATE, SET_SELECTED_ANSWER, SET_INFO_MESSAGE, INPUT_CHANGE, RESET_FORM, TRUE_INPUT_CHANGE, FALSE_INPUT_CHANGE } from "./action-types"
 import axios from "axios"
 
 export function moveClockwise(position) { 
@@ -32,10 +32,6 @@ export function setMessage(message) {
   return {type: SET_INFO_MESSAGE, payload: message}
 }
 
-export function inputChange() { }
-
-export function resetForm() { }
-
 // ❗ Async action creators
 export function fetchQuiz() {
   return function (dispatch) {
@@ -57,15 +53,36 @@ export function postAnswer(quizID, answerID) {
         dispatch(setMessage(res.data.message))
       })
     dispatch(fetchQuiz())
-
-    // On successful POST:
-    // - Dispatch an action to reset the selected answer state
-    // - Dispatch an action to set the server message to state
-    // - Dispatch the fetching of the next quiz
   }
 }
-export function postQuiz() {
+
+export function inputChange(input) { 
+  return {type: INPUT_CHANGE, payload: input}
+}
+
+export function trueChange(input) { 
+  return {type: TRUE_INPUT_CHANGE, payload: input}
+}
+
+export function falseChange(input) { 
+  return {type: FALSE_INPUT_CHANGE, payload: input}
+}
+
+export function resetForm() {
+  return {type: RESET_FORM}
+ }
+
+const newQuizURL = 'http://localhost:9000/api/quiz/new'
+//  - Example of payload: `{ "question_text": "Love JS?", "true_answer_text": "yes", "false_answer_text": "nah" }`
+
+export function postQuiz(question, trueAnswer, falseAnswer) {
   return function (dispatch) {
+    axios.post(newQuizURL, {question_text: `${question}`, true_answer_text: `${trueAnswer}`, false_answer_text: `${falseAnswer}` })
+    .then(res => {
+      dispatch(setMessage(`Congrats: "${question}" is a great question!`))
+    })
+    dispatch(resetForm())
+
     // On successful POST:
     // - Dispatch the correct message to the the appropriate state
     // - Dispatch the resetting of the form

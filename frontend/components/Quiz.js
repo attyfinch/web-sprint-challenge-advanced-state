@@ -7,7 +7,9 @@ import { fetchQuiz, selectAnswer, postAnswer } from '../state/action-creators'
 const Quiz = (props) => {
 
   useEffect(() => {
-    props.fetchQuiz();
+    if (props.quiz === null) {
+      props.fetchQuiz();
+    }
   }, [])
 
   return (
